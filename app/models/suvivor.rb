@@ -1,0 +1,2 @@
+class Suvivor < ApplicationRecord
+end
