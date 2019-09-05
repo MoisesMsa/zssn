@@ -1,9 +1,9 @@
 Rails.application.routes.draw do
-  get 'suvivors/show'
-  get 'suvivors/index'
-  get 'suvivors/destroy'
-  get 'suvivors/update'
-  get 'suvivors/create'
+  get 'survivors/show'
+  get 'survivors/index'
+  get 'survivors/destroy'
+  get 'survivors/update'
+  get 'survivors/create'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  resources :suvivors
+  resources :survivors
 end
