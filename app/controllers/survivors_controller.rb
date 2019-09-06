@@ -48,6 +48,7 @@ class SurvivorsController < ApplicationController
 
   #preciso dessas rotas especificas? ja tem o update?
   def location
+
     lat = params[:latitude].to_f
     long = params[:longitude].to_f
 
@@ -63,13 +64,18 @@ class SurvivorsController < ApplicationController
     survivor_1 = Inventory.find(:user_id1);
     survivor_2 = Inventory.find(:user_id2);
 
-    #check if suvivir has the itens
-    #calc the total valuations in the trade itens
-    points1 = calc_points(params(:items1))
-    points2 = calc_points(params(:items2))
-    #update and record the new values
-    if points1 == points2
-      Inventory.update
+    if(!(survivor_1.infected || survivor_2.infected))
+      #check if suvivir has the itens
+      #calc the total valuations in the trade itens
+      points1 = calc_points(params(:items1))
+      points2 = calc_points(params(:items2))
+      #update and record the new values
+      if points1 == points2
+        Inventory.update
+      end
+      render json: {message:"success", data: trade}, status: :ok
+    else
+      render json: {status: "error", message:"failed", data: trade.erros}, status: :ok
     end
   end
   
