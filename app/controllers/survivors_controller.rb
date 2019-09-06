@@ -5,8 +5,8 @@ class SurvivorsController < ApplicationController
   end
 
   def index
-    survivorss = Survivor.all
-    render json: {status: "ok", message: "success", data: survivorss}
+    survivors = Survivor.all
+    render json: {status: "ok", message: "success", data: survivors}
   end
 
   def destroy
@@ -31,8 +31,9 @@ class SurvivorsController < ApplicationController
   def create
        survivor = Survivor.new(survivors_params);
     
-       if survivor.save
-           params[:items].each do |item|
+    if survivor.save
+      
+       params[:items].each do |item|
            item = Item.find(item)
            inventory = Inventory.new(survivor.id, item.id)
            #If there isn't it in the table it's ignored
@@ -63,8 +64,7 @@ class SurvivorsController < ApplicationController
       Inventory.update
     end
   end
-
-
+  
   def calc_points(items)
     total = 0
     items.each do |i|
