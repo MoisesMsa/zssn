@@ -16,5 +16,7 @@ Rails.application.routes.draw do
   get 'survivors/destroy'
   get 'survivors/update'
   get 'survivors/create'
+
+  get 'survivors/location/:id/:latitude/:longitude' => 'survivors#location'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

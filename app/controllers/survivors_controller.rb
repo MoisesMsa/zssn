@@ -20,11 +20,11 @@ class SurvivorsController < ApplicationController
   end
 
   def update
-    survivors = Survivor.find(params[:id])
+    survivor = Survivor.find(params[:id])
     if survivor.update(survivors_params)
-        render json: {status: "ok", message: "success", data: survivors}, status: :ok
+        render json: {status: "ok", message: "success", data: survivor}, status: :ok
     else
-        render json: {status: "error", message: "success", data: survivors.erros}, status: :error
+        render json: {status: "error", message: "success", data: survivor.erros}, status: :error
     end
   end
 
@@ -48,6 +48,14 @@ class SurvivorsController < ApplicationController
 
   #preciso dessas rotas especificas? ja tem o update?
   def location
+    lat = params[:latitude].to_f
+    long = params[:longitude].to_f
+
+    if(lat >= 0 && lat <= 0 && long >=0 && long >= 180)
+      update
+    else
+        render json: {status: "error", message: "failed", data: "invalid values"}, status: :error
+    end
   end
 
   #relacionar com o inventario
