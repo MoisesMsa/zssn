@@ -11,25 +11,37 @@ class SurvivorsController < ApplicationController
 
   def destroy
     survivors = Survivor.find(params[:id])
-    survivors.destroy
-    render json: {status: "ok", message: "success", data: survivors}, status: :ok
+    puts params
+    if survivors.destroy
+      render json: {status: "ok", message: "success", data: survivors}, status: :ok
+    else
+      render json: {status: "error", message: "failed", data: survivors.errors}, status: :error
+    end
   end
 
   def update
-    survivors = Survivor.find(survivors_params)
-    if survivor.update(params)
+    survivors = Survivor.find(params[:id])
+    if survivor.update(survivors_params)
         render json: {status: "ok", message: "success", data: survivors}, status: :ok
     else
-        render json: {status: "error", message: "success", data: survivors}, status: :error
+        render json: {status: "error", message: "success", data: survivors.erros}, status: :error
     end
   end
 
   def create
-    survivors = Survivor.new(survivors_params);
-    if survivors.save
-        render json: {status: "ok", message: "success", data: survivors}, status: :ok
+       survivor = Survivor.new(survivors_params);
+    
+       if survivor.save
+           params[:items].each do |item|
+           item = Item.find(item)
+           inventory = Inventory.new(survivor.id, item.id)
+           #If there isn't it in the table it's ignored
+           inventory.save
+       end
+        
+        render json: {status: "ok", message: "success", data: survivor}, status: :ok
     else
-        render json: {status: "error", message: "success", data: survivors.erros}, status: :error
+        render json: {status: "error", message: "success", data: survivor.erros}, status: :error
     end
   end
 
@@ -55,7 +67,7 @@ class SurvivorsController < ApplicationController
 
   def calc_points(items)
     total = 0
-    item.each do |i|
+    items.each do |i|
       total += Items.select(points).find(i)
     end
   end
