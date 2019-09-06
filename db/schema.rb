@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_05_194721) do
+ActiveRecord::Schema.define(version: 2019_09_06_185550) do
 
   create_table "infecteds", force: :cascade do |t|
     t.integer "survivor_id", null: false
@@ -36,15 +36,8 @@ ActiveRecord::Schema.define(version: 2019_09_05_194721) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "survivors", force: :cascade do |t|
-    t.string "name"
-    t.integer "age"
-    t.string "gender"
-    t.float "latitude"
-    t.float "longitude"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
+# Could not dump table "survivors" because of following StandardError
+#   Unknown type 'bool' for column 'infected'
 
   add_foreign_key "infecteds", "survivors"
   add_foreign_key "inventories", "items"
