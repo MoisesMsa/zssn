@@ -1,93 +1,95 @@
 class SurvivorsController < ApplicationController
-  def show
-    survivors = Survivor.find(:params[id])
-    render json: {status: "ok", message: "success", data: survivors}, status: :ok
-  end
-
-  def index
-    survivors = Survivor.all
-    render json: {status: "ok", message: "success", data: survivors}
-  end
-
-  def destroy
-    survivors = Survivor.find(params[:id])
-    puts params
-    if survivors.destroy
-      render json: {status: "ok", message: "success", data: survivors}, status: :ok
-    else
-      render json: {status: "error", message: "failed", data: survivors.errors}, status: :error
+    def show
+        survivors = Survivor.find(:params[id])
+        render json: {status: "ok", message: "success", data: survivors}, status: :ok
     end
-  end
 
-  def update
-    survivor = Survivor.find(params[:id])
-    if survivor.update(survivors_params)
-        render json: {status: "ok", message: "success", data: survivor}, status: :ok
-    else
-        render json: {status: "error", message: "success", data: survivor.erros}, status: :error
+    def index
+        survivors = Survivor.all
+        render json: {status: "ok", message: "success", data: survivors}
     end
-  end
 
-  def create
-       survivor = Survivor.new(survivors_params);
-    
-    if survivor.save
-      
-       params[:items].each do |item|
-           item = Item.find(item)
-           inventory = Inventory.new(survivor.id, item.id)
-           #If there isn't it in the table it's ignored
-           inventory.save
-       end
+    def destroy
+        survivors = Survivor.find(params[:id])
+        puts params
         
-        render json: {status: "ok", message: "success", data: survivor}, status: :ok
-    else
-        render json: {status: "error", message: "success", data: survivor.erros}, status: :error
+        if survivors.destroy
+            render json: {status: "ok", message: "success", data: survivors}, status: :ok
+        else
+           render json: {status: "error", message: "failed", data: survivors.errors}, status: :error
+        end
     end
-  end
 
-  #preciso dessas rotas especificas? ja tem o update?
-  def location
-
-    lat = params[:latitude].to_f
-    long = params[:longitude].to_f
-
-    if(lat >= 0 && lat <= 0 && long >=0 && long >= 180)
-      update
-    else
-        render json: {status: "error", message: "failed", data: "invalid values"}, status: :error
+    def update
+        survivor = Survivor.find(params[:id])
+        
+        if survivor.update(survivors_params)
+            render json: {status: "ok", message: "success", data: survivor}, status: :ok
+        else
+            render json: {status: "error", message: "success", data: survivor.erros}, status: :error
+        end
     end
-  end
 
-  #relacionar com o inventario
-  def trade
-    survivor_1 = Inventory.find(:user_id1);
-    survivor_2 = Inventory.find(:user_id2);
+    def create
+        survivor = Survivor.new(survivors_params);
 
-    if(!(survivor_1.infected || survivor_2.infected))
-      #check if suvivir has the itens
-      #calc the total valuations in the trade itens
-      points1 = calc_points(params(:items1))
-      points2 = calc_points(params(:items2))
-      #update and record the new values
-      if points1 == points2
+        if survivor.save
+
+            params[:items].each do |item|
+                 item = Item.find(item)
+                 inventory = Inventory.new(survivor.id, item.id)
+                 #If there isn't it in the table it's ignored
+                 inventory.save
+            end
+            
+            render json: {status: "ok", message: "success", data: survivor}, status: :ok
+        else
+            render json: {status: "error", message: "success", data: survivor.erros}, status: :error
+        end
+    end
+
+     #preciso dessas rotas especificas? ja tem o update?
+     def location
+
+         lat = params[:latitude].to_f
+         long = params[:longitude].to_f
+
+         if(lat >= 0 && lat <= 0 && long >=0 && long >= 180)
+             update
+         else
+              render json: {status: "error", message: "failed", data: "invalid values"}, status: :error
+         end
+     end
+
+    #relacionar com o inventario
+    def trade
+        survivor_1 = Inventory.find(:user_id1);
+        survivor_2 = Inventory.find(:user_id2);
+
+        if(!(survivor_1.infected || survivor_2.infected))
+        #check if suvivir has the itens
+        #calc the total valuations in the trade itens
+        points1 = calc_points(params(:items1))
+        points2 = calc_points(params(:items2))
+        #update and record the new values
+        if points1 == points2
         Inventory.update
-      end
-      render json: {message:"success", data: trade}, status: :ok
-    else
-      render json: {status: "error", message:"failed", data: trade.erros}, status: :ok
+        end
+        render json: {message:"success", data: trade}, status: :ok
+        else
+        render json: {status: "error", message:"failed", data: trade.erros}, status: :ok
+        end
     end
-  end
-  
-  def calc_points(items)
-    total = 0
-    items.each do |i|
-      total += Items.select(points).find(i)
-    end
-  end
 
-  private
-    def survivors_params
-      params.permit(:name, :age, :gender, :latitude, :longitude)
+    def calc_points(items)
+        total = 0
+        items.each do |i|
+            total += Items.select(points).find(i)
+        end
     end
+
+    private
+        def survivors_params
+            params.permit(:name, :age, :gender, :latitude, :longitude)
+        end
 end
