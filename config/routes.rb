@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
    
+  get 'inventories/show'
+  get 'inventories/index'
+  get 'inventories/trade'
   get 'infecteds/index'
   get 'infecteds/show'
   get 'infecteds/create'
@@ -18,6 +21,7 @@ Rails.application.routes.draw do
   
   resources :items
   resources :survivors
+  resources :inventories
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end
