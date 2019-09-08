@@ -31,21 +31,22 @@ class SurvivorsController < ApplicationController
     end
 
     def create
+
         survivor = Survivor.new(survivors_params);
-
         if survivor.save
-
-            params[:items].each do |item|
-                 item = Item.find(item)
-                 inventory = Inventory.new(survivor.id, item.id)
-                 #If there isn't it in the table it's ignored
-                 inventory.save
+            #If there isn't the item to register in the Items's table it's ignored
+            params[:items].each do |i|
+                if Item.exists?(name: i[:name])
+                    item = Item.select(:id).where(name: i[:name]).limit(1)
+                    inventory = Inventory.new(:survivor_id => survivor.id, :item_id => item.ids[0], :total => i[:total])
+                    inventory.save
+                end
             end
-            
             render json: {status: "ok", message: "success", data: survivor}, status: :ok
         else
             render json: {status: "error", message: "success", data: survivor.erros}, status: :error
         end
+        
     end
 
      #preciso dessas rotas especificas? ja tem o update?
