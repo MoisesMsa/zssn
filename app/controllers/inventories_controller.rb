@@ -1,33 +1,82 @@
 class InventoriesController < ApplicationController
-  def show
-  end
 
-  def index
-  end
+	def trade
+	   	s1 = Survivor.find(params[:id1])
+	   	s2 = Survivor.find(params[:id2])
+	    
+	    if(params[:id1].nil? || params[:id2].nil? || params[:items1].nil? || params[:items2].nil?)
+	    	render json: {error: "empty values"}, status: :error
+	    elsif(s1.infected || s2.infected) 
+	    	render json: {error: "infected"}, status: :error
+	    else
+	    	inventories = survivor_inventory([params[:id1], params[:id2]])
 
-  def trade
-  	 inventory = Inventory.joins('JOIN survivors ON survivors.id = inventories.survivor_id JOIN items ON items.id = inventories.item_id')
-        .select('inventories.total, inventories.survivor_id, inventories.id, items.name as item_name, survivors.name as suvivor_name, survivors.infected')
-        .where("inventories.survivor_id = #{params[:id1]} OR inventories.survivor_id = #{params[:id2]}")
-       
-        puts inventory.inspect
-        render json: {data: inventory}
-        # end
-  end
+	    	if check_points([params[:id1], params[:id2]],[params[:items1], params[:items2]])
+	    		puts "TRUEEEEEEE"
+				# swap_itens	    
+	   #  		render json: {data: "a"}
+	    	end
+	    end
+	end
 
+	private    
+
+	def check_points(survivor_id, items)
+      
+        points = [0, 0]
+        equal = false
+       	#check if the survivor has the items to trade
+        for i in 0..1
+	        items[i].each do |item|
+	        	item_id = get_item_id(item[:name])
+			    if get_total_item(survivor_id[i], item_id) > 0
+		          points[i] += get_item_points(item_id)*item[:total].to_i
+		        end
+	        end
+        end
+
+        if points[0] == points[1]
+        	equal = true
+        end
+        
+        return equal
+	 end
+
+	  def survivor_inventory(survivor_id)
+	  	inventories = Array.new
+	  	
+	  	for i in 0..1
+     		inventory = Inventory.select("items.name, items.points, inventories.total")
+        			.where(survivor_id: survivor_id[0])
+        			.joins('JOIN items on items.id = inventories.item_id')
+        	inventories.push(inventory)
+        end
+
+        return inventories
+      end 
+
+      def get_item_points(item_id)
+      	item = Item.find(item_id)
+      	return item.points
+      end
+
+      def get_item_id(item_name)
+      	item = Item.find_by(name: item_name)
+      	return item.id
+      end
    
-   def check_items
-        items.each do |i|
-          if inventory.exists?(i.name )
-          end
-        end
-    end
+      def get_total_item(user_id, item_id)
+	  	Inventory.where(survivor_id:  user_id, item_id: item_id).sum(:total)
+	  end
+	 
+	  def remove_item(survivor_id, item, total)
+	  	inventory_item = Inventory.find(survivor_id)
+	  	total = inventory.total - total
 
-    def calc_points(items)
-        total = 0
-        items.each do |i|
-            total += Items.select(points).find(i)
-        end
-    end
+	  	if(total > 0)
+	  		inventory_item.update(item[:id], item[:total])
+	  	end
+	  end
+
 
 end
