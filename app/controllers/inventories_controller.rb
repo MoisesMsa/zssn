@@ -1,78 +1,41 @@
 class InventoriesController < ApplicationController
 
 	def trade
-		suvivor = Survivor.select('items.name', 'inventories.total').joins(:item).all
+		#get all the records in the database where the paramater matchs
 
-		render json:{data: suvivor}
-		# s1 = Survivor.find(params[:id1])
-		# s2 = Survivor.find(params[:id2])
+		survivor_1 = Survivor.survivor_inventory(params[:id1], params[:items1names])
+		survivor_2 = Survivor.survivor_inventory(params[:id2], params[:items2names])
+		
+		totais_1 = params[:items1totals]
+		totais_2 = params[:items2totals]
+		
+		render json: {survivor_1: survivor_1, survivor_2: survivor_2}
 
 		# if(params[:id1].nil? || params[:id2].nil? || params[:items1].nil? || params[:items2].nil?)
 		# 	render json: {error: "empty values"}, status: :error
-		# elsif(s1.infected || s2.infected) 
-		# 	render json: {error: "infected"}, status: :error
-		# else
-		# 	if check_points([params[:id1], params[:id2]],[params[:items1], params[:items2]])
-		# 		swap_itens()	    
-		# 	    render json: {data: "a"}
-		# 	end
-		# end
+		if(survivor_1[0][:infected] || survivor_2[0][:infected]) 
+			render json: {error: "infected"}, status: :error
+		else
+			if check_points([survivor_1, survivor_2])
+				# update(survivor_1)
+			end
+		end
 	end
 
-		def check_points(survivor_id, items)
+	def check_points(items)	
+		points = Array.new
+		
+		items.each do |item|
+		  sum = item.sum{|i| i.total*i.points}
+		  points.push sum
+		end		
 
-			points = [0, 0]
-			equal = false
-			#check if the survivor has the items to trade
-			for i in 0..1
-				items[i].each do |item|
-					item_id = get_item_id(item[:name])
-					if get_total_item(survivor_id[i], item_id) > 0
-						points[i] += get_item_points(item_id)*item[:total].to_i
-					end
-				end
-			end
-
-			if points[0] == points[1]
-				equal = true
-			end
-
-		    equal
-		end
-
-		def get_item_points(item_id)
-			item = Item.find(item_id)
-			item.points
-		end
-
-		def get_item_id(item_name)
-			item = Item.find_by(name: item_name)
-			item.id
-		end
-
-		def get_total_item(user_id, item_id)
-			Inventory.where(survivor_id:  user_id, item_id: item_id).sum(:total)
-		end
+		points[0] == points[1] ? true : false
+	end
 
 	private    
-
-		def update(user_id, items_remove, items_add, remove = false)
-			# if Inventory.where(survivor_id: user_id).exists?(item_id: item_id)
-			# 	inventory = Inventory.where(survivor_id: user_id, item_id: items[:item_id])
-			# 	if remove
-			# 		total = inventory.total - total
-			# 	else
-			# 		total = items[:total]
-			# 	end
-			# 	inventory.update(total: total)
-			# else
-			# 	Inventory.create(survivor_id: user_id, item_id: items[:item_id], total)
-			# end
+		def update(items)
+			items = find_or_create_by()
+			items.update_attributes()
 		end
-
-		def swap_itens(user_ids, items_survirvors)
-			update(user_id[0], items[0], items[1],true)
-			update(user_id[1], items[1], items[0], false)
-		end
-
 end
