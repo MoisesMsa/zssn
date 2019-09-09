@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
    
+  get 'reports/get_infected_total'
+  get 'reports/get_non_infected'
+  get 'reports/avg_items'
+  get 'reports/infected_lost_points'
+  
   get 'inventories/show'
   get 'inventories/index'
   get 'inventories/trade'

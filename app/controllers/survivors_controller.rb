@@ -37,7 +37,6 @@ class SurvivorsController < ApplicationController
              items = Item.all
              #associates all in items's table to the survivor's inventory
              items.each do |item|
-                puts params[:items].inspect
                 total = params[:items].key?(item.name.downcase) ? params[:items][item.name.downcase] :  0
                 inventory = Inventory.new(survivor_id: survivor.id, item_id: item.id, total: total)
                 inventory.save
@@ -56,9 +55,9 @@ class SurvivorsController < ApplicationController
          long = params[:longitude].to_f
 
          if(lat >= 0 && lat <= 0 && long >=0 && long >= 180)
-             update
+            update
          else
-              render json: {status: "error", message: "failed", data: "invalid values"}, status: :error
+            render json: {status: "error", message: "failed", data: "invalid values"}, status: :error
          end
      end
    

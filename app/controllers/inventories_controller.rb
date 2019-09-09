@@ -23,7 +23,7 @@ class InventoriesController < ApplicationController
 			end
 		end
 	end
-
+	
 	private 
 
 		def inventory_items(survivor_id)
