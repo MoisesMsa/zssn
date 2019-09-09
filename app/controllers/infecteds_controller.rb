@@ -6,7 +6,7 @@ class InfectedsController < ApplicationController
   end
 
   def create
-    survivor_id = params[:survivor_id]
+    survivor_id = params[:id]
 
     if(Infected.count(survivor_id) >= 3)
       Survivor.update(survivor_id, :infected => 1)
