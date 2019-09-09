@@ -6,5 +6,5 @@ class Survivor < ApplicationRecord
 												'items.name', 'items.points','inventories.total')
 		          								.joins(:item)
 		          								.where('survivors.id' => survivor_id, 'items.name' => items)}
-		          								
+
 end
