@@ -54,7 +54,7 @@ class SurvivorsController < ApplicationController
          lat = params[:latitude].to_f
          long = params[:longitude].to_f
 
-         if(lat >= 0 && lat <= 0 && long >=0 && long >= 180)
+         if(lat >= 0 && lat <= 90 && long >=0 && long >= 180)
             update
          else
             render json: {status: "error", message: "failed", data: "invalid values"}, status: :error
