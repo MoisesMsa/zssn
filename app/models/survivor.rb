@@ -1,3 +1,4 @@
 class Survivor < ApplicationRecord
-	has_one :inventory
+	has_many :inventory
+	has_many :item, through: :inventory
 end
