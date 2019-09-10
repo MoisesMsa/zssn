@@ -1,7 +1,7 @@
 class InfectedsController < ApplicationController
 
   def index
-    infecteds = Infected.all
+    infecteds = Infected.all.where(:infected => 1)
     render json:{staus: "ok", message:"success", data: infecteds}
   end
 

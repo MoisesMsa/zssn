@@ -13,14 +13,14 @@ class ReportsController < ApplicationController
   def get_non_infected_total
   	no_infecteds = Survivor.where(:conditions => "infected != 1").count(:id)
   	total = (no_infecteds.to_f/(get_total.to_f))*100
-  	render json: {status: "ok", message: "success",total_infecteds: total}, status: :ok
+  	render json: {status: "ok", message: "success",total_survivors: total}, status: :ok
   end
 
   def avg_items
     items = Item.all
   	avgs = Hash.new
     items.each do |i|
-      avg = Item.joins(:inventory)
+      avg = Item.joins(inventory: [:survivor])
               .select('items.name', 'inventories.item_id', 'inventories.total')
               .where(:name => i.name)
               .average(:total)

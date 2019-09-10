@@ -20,6 +20,8 @@ class InventoriesController < ApplicationController
 			if(calc_points(s1_inventory, items_s1) == calc_points(s2_inventory, items_s2))
 				update(s1_inventory, items_s1, items_s2)
 				update(s2_inventory, items_s2, items_s1)
+			else
+				render json: {error: "diferent potuations"}, status: :error
 			end
 		end
 	end

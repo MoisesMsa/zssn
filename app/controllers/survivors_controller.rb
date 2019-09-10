@@ -1,11 +1,11 @@
 class SurvivorsController < ApplicationController
     def show
-        survivors = Survivor.find(:params[id])
+        survivors = Survivor.find(params[:id])
         render json: {status: "ok", message: "success", data: survivors}, status: :ok
     end
 
     def index
-        survivors = Survivor.all
+        survivors = Survivor.where(:infected => nil).all
         render json: {status: "ok", message: "success", data: survivors}
     end
 
@@ -54,7 +54,7 @@ class SurvivorsController < ApplicationController
          lat = params[:latitude].to_f
          long = params[:longitude].to_f
 
-         if(lat >= 0 && lat <= 90 && long >=0 && long >= 180)
+         if(lat > -1 && lat < 91 && long > -1 && long < 181)
             update
          else
             render json: {status: "error", message: "failed", data: "invalid values"}, status: :error
